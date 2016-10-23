@@ -33,22 +33,40 @@ var albumMarconi = {
 var createSongRow = function (songNumber, songName, songLength) {
     var template =
         '<tr class="album-view-song-item">'
+<<<<<<< HEAD
         + '   <td class="song-item-number>' + songNumber + '</td>'
         + '   <td class="song-item-title">' + songName + '</td>'
         + '   <td class="song-item-duration">' + songLength + '</td>'
         + '</tr>';
+=======
+        + '  <td class="song-item-number" data-song-number="' + songNumber + '">' + songNumber + '</td>'
+        + '  <td class="song-item-title">' + songName + '</td>'
+        + '  <td class="song-item-duration">' + songLength + '</td>'
+        + '</tr>'
+    ;
+>>>>>>> checkpoint-12
 
     return template;
 };
 
+<<<<<<< HEAD
 var setCurrentAlbum = function (album) {
     // #1
     var albumTitle = document.getElementsByClassName('album-view-title')[0];
     console.log("albumTitle " + albumTitle);
+=======
+var setCurrentAlbum = function(album) {
+    // #1
+    var albumTitle = document.getElementsByClassName('album-view-title')[0];
+>>>>>>> checkpoint-12
     var albumArtist = document.getElementsByClassName('album-view-artist')[0];
     var albumReleaseInfo = document.getElementsByClassName('album-view-release-info')[0];
     var albumImage = document.getElementsByClassName('album-cover-art')[0];
     var albumSongList = document.getElementsByClassName('album-view-song-list')[0];
+<<<<<<< HEAD
+=======
+
+>>>>>>> checkpoint-12
     // #2
     albumTitle.firstChild.nodeValue = album.title;
     albumArtist.firstChild.nodeValue = album.artist;
@@ -60,12 +78,46 @@ var setCurrentAlbum = function (album) {
 
     // #4
     for (var i = 0; i < album.songs.length; i++) {
+<<<<<<< HEAD
         console.log("ASL " + album.songs.length);
+=======
+>>>>>>> checkpoint-12
         albumSongList.innerHTML += createSongRow(i + 1, album.songs[i].title, album.songs[i].duration);
     }
 };
 
+<<<<<<< HEAD
 window.onload = function () {
     console.log("Picasso onload" + albumPicasso);
     setCurrentAlbum(albumPicasso);
 };
+=======
+// Elements we'll be adding listeners to
+var songListContainer = document.getElementsByClassName('album-view-song-list')[0];
+var songRows = document.getElementsByClassName('album-view-song-item');
+
+
+// Album button templates
+var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
+
+window.onload = function() {
+    setCurrentAlbum(albumPicasso);
+
+    songListContainer.addEventListener('mouseover', function(event) {
+        // #1
+        if (event.target.parentElement.className === 'album-view-song-item'){
+            // Change the content from the number to the play button's HTML
+            event.target.parentElement.querySelector('.song-item-number').innerHTML = playButtonTemplate
+        }
+    });
+
+    for (var i = 0; i < songRows.length; i++){
+        songRows[i].addEventListener('mouseleave', function(event){
+            // Selects first child element, which is the song-item-number elemnt
+            this.children[0].innerHTML = this.children[0].getAttribute('data-song-number');
+        });
+
+    }
+}
+
+>>>>>>> checkpoint-12
