@@ -205,6 +205,16 @@ var updatePlayerBarSong = function() {
     $('.main-controls .play-pause').html(playerBarPauseButton);
 };
 
+var togglePlayFromPlayerBar = function() {
+    if (currentSoundFile.isPaused()) {
+        nextSong();
+        updatePlayerBarSong();
+    } else {
+        $currentPlayerBarPlay.html($currentPlayerBarPlayButton);
+        currentSoundFile.pause();
+    }
+ };
+
 var setSong = function(songNumber) {
     if (currentSoundFile) {
         currentSoundFile.stop();
@@ -247,15 +257,18 @@ var nextSongNumber = null;
 var currentSongFromAlbum = null;
 var currentSoundFile = null;
 var currentVolume = 80;
-
 var $previousButton = $('.main-controls .previous');
 var $nextButton = $('.main-controls .next');
+var $currentPlayerBarPlay = $('.main-controls .play-pause');
 
 $(document).ready(function() {
     setCurrentAlbum(albumPicasso);
+    currentSongFile = currentAlbum.songs[0].audioUrl;
 //    setupSeekBars();
     $previousButton.click(previousSong);
     $nextButton.click(nextSong);
+    $currentPlayerBarPlay.click(togglePlayFromPlayerBar());
+
 
 });
 
