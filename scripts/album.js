@@ -95,7 +95,7 @@ var updateSeekPercentage = function($seekBar, seekBarFillRatio) {
     // #2
     var percentageString = offsetXPercent + '%';
     $seekBar.find('.fill').width(percentageString);
-    $seekBar.find('.fill').css({left: percentageString});
+    $seekBar.find('.thumb').css({left: percentageString});
 };
 
 var setupSeekBars = function() {
@@ -110,6 +110,26 @@ var setupSeekBars = function() {
 
     // #5
     updateSeekPercentage($(this), seekBarFillRatio);
+    });
+    // #7
+    $seekBars.find('.thumb').mousedown(function(event) {
+        // #8
+        var $seekBar = $(this).parent();
+
+        // #9
+        $(document).bind('mousemove.thumb', function(event){
+            var offsetX = event.pageX - $seekBar.offset().left;
+            var barWidth = $seekBar.width();
+            var seekBarFillRatio = offsetX / barWidth;
+
+            updateSeekPercentage($seekBar, seekBarFillRatio);
+        });
+
+        // #10
+        $(document).bind('mouseup.thumb', function(){
+            $(document).unbind('mousemove.thumb');
+            $(document).unbind('mouseup.thumb');
+        });
     });
 };
 
@@ -144,30 +164,6 @@ var nextSong = function() {
     $lastSongNumberCell.html(lastSongNumber);
 
 };
-
-// Ok, here's my attempt at it.  Not complete that the bottom
-// Get the index of the current song
-//    trackIndex(album, song)
-//    // Get the Index of the Previous.  First next song is the first song.
-//    if (currentlyPlayingSongNumber = album.length - 1) {
-//        previousSongNumber = 1;
-//    // Previous Song
-//    } else {
-//        previousSongNumber = currentlyPlaySongNumber - 1;
-//    }
-//
-//    // Get the Index of the Current song and then increment the value of the index.
-//    if (trackIndex(album, song) = album.length -1) {
-//        currentlyPlayingSongNumber = 1;
-//    } else {
-//        currentlyPlayingSongNumber += 1
-//    }
-//
-//    $('.song-item-number')
-//    updatePlayerBarSong();
-//
-//}
-
 
 var previousSong = function() {
     getLastSongNumber = function(index) {
