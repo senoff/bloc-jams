@@ -21,8 +21,13 @@ var createSongRow = function (songNumber, songName, songLength) {
             // Switch from Play -> Pause button to indicate new song is playing.
             setSong(songNumber);
             currentSoundFile.play();
-            $(this).html(pauseButtonTemplate);
+            updateSeekBarWhileSongPlays();
             currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
+            var $volumeFill = $('.volume .fill');
+            var $volumeThumb = $('.volume .thumb');
+            $volumeFill.width(currentVolume + '%');
+            $volumeThumb.css({left: currentVolume + '%'});
+            $(this).html(pauseButtonTemplate);
             updatePlayerBarSong();
         } else if (currentlyPlayingSongNumber === songNumber) {
 
@@ -30,6 +35,7 @@ var createSongRow = function (songNumber, songName, songLength) {
                 $(this).html(pauseButtonTemplate);
                 $('main-controls .play-pause').html(playerBarPauseButton);
                 currentSoundFile.play();
+                updateSeekBarWhileSongPlays();
             } else {
                 $(this).html(playButtonTemplate);
                 $('main-controls .play-pause').html(playerBarPlayButton);
@@ -86,6 +92,19 @@ var setCurrentAlbum = function(album) {
     }
 };
 
+var updateSeekBarWhileSongPlays = function() {
+    if (currentSoundFile) {
+        // #10
+        currentSoundFile.bind('timeupdate', function(event) {
+            // #11
+            var seekBarFillRatio = this.getTime() / this.getDuration();
+            var $seekBar = $('.seek-control .seek-bar');
+
+            updateSeekPercentage($seekBar, seekBarFillRatio);
+        });
+    }
+}
+
 var updateSeekPercentage = function($seekBar, seekBarFillRatio) {
     var offsetXPercent = seekBarFillRatio * 100;
     // #1
@@ -102,15 +121,22 @@ var setupSeekBars = function() {
     var $seekBars = $('.player-bar .seek-bar');
 
     $seekBars.click(function(event) {
-    // #3
-    var offsetX = event.pageX - $(this).offset().left;
-    var barWidth = $(this).width();
-    // #4
-    var seekBarFillRatio = offsetX / barWidth;
+        // #3
+        var offsetX = event.pageX - $(this).offset().left;
+        var barWidth = $(this).width();
+        // #4
+        var seekBarFillRatio = offsetX / barWidth;
 
-    // #5
-    updateSeekPercentage($(this), seekBarFillRatio);
-    });
+        // #5
+        if ($(this).parent().attr('class') == 'seek-control') {
+            seek(seekBarFillRatio * currentSoundFile.getDuration())
+        } else {
+            setVolume(seekBarFillRatio * 100);
+        }
+
+        updateSeekPercentage($(this), seekBarFillRatio);
+        });
+
     // #7
     $seekBars.find('.thumb').mousedown(function(event) {
         // #8
@@ -122,11 +148,17 @@ var setupSeekBars = function() {
             var barWidth = $seekBar.width();
             var seekBarFillRatio = offsetX / barWidth;
 
+            if ($(this).parent().attr('class') == 'seek-control') {
+                seek(seekBarFillRatio * currentSoundFile.getDuration())
+            } else {
+                setVolume(seekBarFillRatio * 100);
+            }
+
             updateSeekPercentage($seekBar, seekBarFillRatio);
         });
 
         // #10
-        $(document).bind('mouseup.thumb', function(){
+        $(document).bind('mouseup.thumb', function() {
             $(document).unbind('mousemove.thumb');
             $(document).unbind('mouseup.thumb');
         });
@@ -154,6 +186,7 @@ var nextSong = function() {
 
     setSong(currentSongIndex + 1);
     currentSoundFile.play();
+    updateSeekBarWhileSongPlays();
     updatePlayerBarSong();
 
     var lastSongNumber = getLastSongNumber(currentSongIndex);
@@ -183,6 +216,7 @@ var previousSong = function() {
 
     setSong(currentSongIndex + 1);
     currentSoundFile.play();
+    updateSeekBarWhileSongPlays();
     updatePlayerBarSong();
 
     var lastSongNumber = getLastSongNumber(currentSongIndex);
@@ -217,6 +251,12 @@ var setSong = function(songNumber) {
 
     setVolume(currentVolume);
 };
+
+var seek = function(time) {
+    if (currentSoundFile) {
+        currentSoundFile.setTime(time);
+    }
+}
 
 var setVolume = function(volume) {
     if (currentSoundFile) {
