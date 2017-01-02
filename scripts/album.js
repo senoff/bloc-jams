@@ -268,9 +268,23 @@ var getSongNumberCell = function(number){
     return $('.song-item-number[data-song-number="' + number + '"]');
 }
 
-// Album button templates
+var togglePlayFromPlayerBar = function() {
+    if(currentlyPlayingSongNumber !== null){
+        if (currentSoundFile.isPaused()) {
+//            change song number cell from a play button to a pause button
+            $('main-controls .play-pause').html(playerBarPauseButton);
+            currentSoundFile.play();
+            updateSeekBarWhileSongPlays();
+        } else {
+            $(this).html(playerBarPlayButton);
+ //         change the song number cell from a pause button to a play button
+            $('main-controls .play-pause').html(playerBarPlayButton);
+            currentSoundFile.pause();
+        }
+    }
+};
+
 var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
-// Ion Pause button
 var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
 var playerBarPlayButton = '<span class="ion-play"></span>';
 var playerBarPauseButton = '<span class="ion-pause"></span>';
@@ -286,11 +300,13 @@ var currentVolume = 80;
 
 var $previousButton = $('.main-controls .previous');
 var $nextButton = $('.main-controls .next');
+var $playPauseButton = $('.main-controls .play-pause');
 
 $(document).ready(function() {
     setCurrentAlbum(albumPicasso);
     setupSeekBars();
     $previousButton.click(previousSong);
+    $playPauseButton.click(togglePlayFromPlayerBar);
     $nextButton.click(nextSong);
 
 });
